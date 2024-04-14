@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option csharp_namespace = "download_please";
+
+package download;
+
+service Download {
+  // Sends a greeting
+  rpc Download (DownloadRequest) returns (DownloadReply);
+}
+
+message DownloadRequest {
+  string url = 1;
+}
+
+message DownloadReply {
+  string status = 1;
+}
