@@ -7,7 +7,7 @@
         {
             _httpClient = httpClient;
         }
-        public async Task<DownloadReply> Download(DownloadRequest request, FileStream localFileStream) { 
+        public async Task<DownloadReply> Download(DownloadRequest request, Stream localFileStream) { 
             var internetStream = await _httpClient.GetStreamAsync(request.Url);
             internetStream.CopyToAsync(localFileStream);
             return new DownloadReply
