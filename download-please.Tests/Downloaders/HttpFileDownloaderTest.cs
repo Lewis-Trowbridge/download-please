@@ -1,6 +1,4 @@
 ﻿using download_please.Downloaders;
-using download_please.Downloaders.Selectors;
-using download_please.Services;
 using System.Text;
 
 namespace download_please.Tests.Downloaders

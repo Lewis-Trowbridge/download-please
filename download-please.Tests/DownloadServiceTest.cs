@@ -11,14 +11,32 @@ namespace download_please.Tests
     {
         private Mock<IDownloaderSelector> MockDownloaderSelector;
         private IFileSystem FakeFileSystem { get; }
-        private DownloadService TestService;
+        private string HomeDirectory { get; } = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        private DownloadService TestService { get; }
 
         public DownloadServiceTest() 
         {
             MockDownloaderSelector = new Mock<IDownloaderSelector>();
             FakeFileSystem = new MockFileSystem();
-            FakeFileSystem.Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
+            FakeFileSystem.Directory.CreateDirectory(HomeDirectory);
             TestService = new DownloadService(MockDownloaderSelector.Object, FakeFileSystem);
+        }
+
+        [Fact]
+        public async Task DownloadService_WhenGivenRequest_CreatesFileInHomeDirectory()
+        {
+            var fakeFileName = "fakefile";
+            var mockDownloader = new Mock<IDownloader>();
+            MockDownloaderSelector.Setup(x => x.Select(It.IsAny<DownloadRequest>())).Returns(mockDownloader.Object);
+            var mockContext = Mock.Of<ServerCallContext>();
+            var fakeRequest = new DownloadRequest()
+            {
+                Url = $"http://fake-url.com/{fakeFileName}"
+            };
+
+            await TestService.Download(fakeRequest, mockContext);
+
+            FakeFileSystem.File.Exists($"{HomeDirectory}{Path.DirectorySeparatorChar}{fakeFileName}").Should().BeTrue();
         }
 
         [Fact]
