@@ -1,12 +1,14 @@
 using download_please.Downloaders;
 using download_please.Downloaders.Selectors;
 using download_please.Services;
+using System.IO.Abstractions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddGrpc();
 
+builder.Services.AddSingleton<IFileSystem, FileSystem>();
 
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<DownloaderSelector>();
