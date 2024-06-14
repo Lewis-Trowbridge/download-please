@@ -6,6 +6,7 @@ namespace download_please.Services
 {
     public class DownloadService : Download.DownloadBase
     {
+        public static readonly string DOWNLOAD_PLEASE_DIR = "DOWNLOAD_PLEASE_DIR";
         private readonly IDownloaderSelector _downloaderSelector;
         private readonly IFileSystem _fileSystem;
         public DownloadService(IDownloaderSelector downloaderSelector, IFileSystem fileSystem)
@@ -19,7 +20,7 @@ namespace download_please.Services
             var downloader = _downloaderSelector.Select(request);
 
             var fileUrl = new Uri(request.Url, UriKind.Absolute);
-            var homeDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            var homeDirectory = Environment.GetEnvironmentVariable(DOWNLOAD_PLEASE_DIR) ?? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             using var localFileStream = _fileSystem.File.Create($"{homeDirectory}{Path.DirectorySeparatorChar}{fileUrl.Segments.Last()}");
 
             return await downloader.Download(request, localFileStream);
