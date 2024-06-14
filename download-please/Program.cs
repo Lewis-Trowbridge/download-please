@@ -11,7 +11,7 @@ builder.Services.AddGrpc();
 builder.Services.AddSingleton<IFileSystem, FileSystem>();
 
 builder.Services.AddHttpClient();
-builder.Services.AddSingleton<DownloaderSelector>();
+builder.Services.AddSingleton<IDownloaderSelector, DownloaderSelector>();
 builder.Services.AddSingleton<HttpFileDownloader>();
 
 var app = builder.Build();
