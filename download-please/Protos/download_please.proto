@@ -15,4 +15,5 @@ message DownloadRequest {
 
 message DownloadReply {
   string status = 1;
+  double progress = 2;
 }

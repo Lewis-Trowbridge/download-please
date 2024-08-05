@@ -1,3 +1,4 @@
+using download_please.Downloaders;
 using download_please.Downloaders.Selectors;
 using Grpc.Core;
 using System.IO.Abstractions;
@@ -23,7 +24,11 @@ namespace download_please.Services
             var homeDirectory = Environment.GetEnvironmentVariable(DOWNLOAD_PLEASE_DIR) ?? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             using var localFileStream = _fileSystem.File.Create($"{homeDirectory}{Path.DirectorySeparatorChar}{fileUrl.Segments.Last()}");
 
-            return await downloader.Download(request, localFileStream);
+            var background = new DownloadBackgroundRunner(downloader, request, localFileStream);
+
+            await background.StartAsync(context.CancellationToken);
+
+            return background.Downloader.CurrentStatus;
         }
     }
 }
