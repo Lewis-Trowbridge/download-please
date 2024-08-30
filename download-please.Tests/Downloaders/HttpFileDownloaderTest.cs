@@ -1,4 +1,6 @@
 ﻿using download_please.Downloaders;
+using download_please.Utils;
+using System.IO.Abstractions.TestingHelpers;
 using System.Text;
 
 namespace download_please.Tests.Downloaders
@@ -13,7 +15,7 @@ namespace download_please.Tests.Downloaders
         {
             MockHandler = new Mock<HttpMessageHandler>();
             MockHandler.SetupAnyRequest().ReturnsResponse(System.Net.HttpStatusCode.OK);
-            TestService = new HttpFileDownloader(MockHandler.CreateClient());
+            TestService = new HttpFileDownloader(MockHandler.CreateClient(), new FileUtils(new MockFileSystem()));
 
         }
 
@@ -27,7 +29,7 @@ namespace download_please.Tests.Downloaders
             };
             var fakeStream = new MemoryStream();
 
-            await TestService.Download(fakeRequest, fakeStream);
+            await TestService.Download(fakeRequest, "");
 
             MockHandler.VerifyRequest(fakeUrl);
         }
@@ -44,7 +46,7 @@ namespace download_please.Tests.Downloaders
             };
             var fakeStream = new MemoryStream();
 
-            await TestService.Download(fakeRequest, fakeStream);
+            await TestService.Download(fakeRequest, "");
 
             var actual = Encoding.UTF8.GetString(fakeStream.ToArray());
 
@@ -66,7 +68,7 @@ namespace download_please.Tests.Downloaders
                 Status = "Downloading",
             };
 
-            var actual = await TestService.Download(fakeRequest, fakeStream);
+            var actual = await TestService.Download(fakeRequest, "");
 
             actual.Should().BeEquivalentTo(expected);
 

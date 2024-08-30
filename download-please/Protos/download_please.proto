@@ -7,6 +7,7 @@ package download;
 service Download {
   // Sends a greeting
   rpc Download (DownloadRequest) returns (DownloadReply);
+  rpc Status (StatusRequest) returns (DownloadReply);
 }
 
 message DownloadRequest {
@@ -14,6 +15,11 @@ message DownloadRequest {
 }
 
 message DownloadReply {
-  string status = 1;
-  double progress = 2;
+  string uuid = 1;
+  string status = 2;
+  double progress = 3;
+}
+
+message StatusRequest {
+	string uuid = 1;
 }

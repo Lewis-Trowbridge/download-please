@@ -1,37 +1,46 @@
-﻿using HttpProgress;
+﻿using download_please.Utils;
+using HttpProgress;
 using NaiveProgress;
+using System.Diagnostics;
 
 namespace download_please.Downloaders
 {
     public class HttpFileDownloader : IDownloader
     {
         private HttpClient _httpClient;
-        private DownloadReply _currentStatus = new()
+        private readonly FileUtils _fileUtils;
+
+        public DownloadReply CurrentStatus { get; private set; } = new()
         {
             Status = "Not started",
             Progress = 0,
         };
 
-        public DownloadReply CurrentStatus => _currentStatus;
-
         private IProgress<ICopyProgress> progress;
-        public HttpFileDownloader(HttpClient httpClient)
+        public HttpFileDownloader(HttpClient httpClient,
+            FileUtils fileUtils
+            )
         {
             _httpClient = httpClient;
-            progress = new NaiveProgress<ICopyProgress>(x => _currentStatus.Progress = x.PercentComplete);
+            _fileUtils = fileUtils;
+            progress = new NaiveProgress<ICopyProgress>(x => {
+                Console.WriteLine(x.PercentComplete);
+                CurrentStatus.Progress = x.PercentComplete;
+            });
         }
 
 
-        public Task<DownloadReply> Download(DownloadRequest request, Stream localFileStream)
+        public Task<DownloadReply> Download(DownloadRequest request, string fileUri)
         {
-            return Download(request, localFileStream, CancellationToken.None);
+            return Download(request, fileUri, CancellationToken.None);
         }
 
-        public async Task<DownloadReply> Download(DownloadRequest request, Stream localFileStream, CancellationToken token) {
-            _currentStatus.Status = "Downloading";
+        public async Task<DownloadReply> Download(DownloadRequest request, string fileUri, CancellationToken token) {
+            CurrentStatus.Status = "Downloading";
+            var localFileStream = _fileUtils.CreateFile(fileUri);
             await _httpClient.GetAsync(request.Url, localFileStream, progress, token);
-            _currentStatus.Status = "Downloaded";
-            return _currentStatus;
+            CurrentStatus.Status = "Downloaded";
+            return CurrentStatus;
         }
     }
 }

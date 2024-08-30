@@ -5,18 +5,18 @@ namespace download_please.Downloaders
     {
         public IDownloader Downloader { get; }
         public DownloadRequest Request { get; }
-        public Stream Stream { get; }
+        public string FileUri { get; }
         
 
-        public DownloadBackgroundRunner(IDownloader downloader, DownloadRequest request, Stream fileStream) {
+        public DownloadBackgroundRunner(IDownloader downloader, DownloadRequest request, string fileUri) {
             Downloader = downloader;
             Request = request;
-            Stream = fileStream;
+            FileUri = fileUri;
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            return Downloader.Download(Request, Stream, stoppingToken);
+            return Downloader.Download(Request, FileUri, stoppingToken);
         }
     }
 }
