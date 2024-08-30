@@ -9,14 +9,18 @@ namespace download_please.Tests.Downloaders
     {
 
         private Mock<HttpMessageHandler> MockHandler { get; }
+        private Mock<IFileUtils> MockFileUtils { get; }
+        private MemoryStream FakeStream { get; }
         private HttpFileDownloader TestService { get; }
 
         public HttpFileDownloaderTest()
         {
             MockHandler = new Mock<HttpMessageHandler>();
             MockHandler.SetupAnyRequest().ReturnsResponse(System.Net.HttpStatusCode.OK);
-            TestService = new HttpFileDownloader(MockHandler.CreateClient(), new FileUtils(new MockFileSystem()));
-
+            FakeStream = new MemoryStream();
+            MockFileUtils = new Mock<IFileUtils>();
+            MockFileUtils.Setup(x => x.CreateFile(It.IsAny<string>())).Returns(FakeStream);
+            TestService = new HttpFileDownloader(MockHandler.CreateClient(), MockFileUtils.Object);
         }
 
         [Fact]
@@ -27,7 +31,6 @@ namespace download_please.Tests.Downloaders
             {
                 Url = fakeUrl
             };
-            var fakeStream = new MemoryStream();
 
             await TestService.Download(fakeRequest, "");
 
@@ -44,11 +47,10 @@ namespace download_please.Tests.Downloaders
             {
                 Url = fakeUrl
             };
-            var fakeStream = new MemoryStream();
 
             await TestService.Download(fakeRequest, "");
 
-            var actual = Encoding.UTF8.GetString(fakeStream.ToArray());
+            var actual = Encoding.UTF8.GetString(FakeStream.ToArray());
 
             actual.Should().BeEquivalentTo(fakeContent);
         }
@@ -61,11 +63,10 @@ namespace download_please.Tests.Downloaders
             {
                 Url = fakeUrl
             };
-            var fakeStream = new MemoryStream();
 
             var expected = new DownloadReply()
             {
-                Status = "Downloading",
+                Status = "Downloaded"
             };
 
             var actual = await TestService.Download(fakeRequest, "");
