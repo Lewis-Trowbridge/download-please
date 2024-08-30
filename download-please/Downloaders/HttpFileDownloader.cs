@@ -7,8 +7,8 @@ namespace download_please.Downloaders
 {
     public class HttpFileDownloader : IDownloader
     {
-        private HttpClient _httpClient;
-        private readonly FileUtils _fileUtils;
+        private readonly HttpClient _httpClient;
+        private readonly IFileUtils _fileUtils;
 
         public DownloadReply CurrentStatus { get; private set; } = new()
         {
@@ -18,13 +18,13 @@ namespace download_please.Downloaders
 
         private IProgress<ICopyProgress> progress;
         public HttpFileDownloader(HttpClient httpClient,
-            FileUtils fileUtils
+            IFileUtils fileUtils
             )
         {
             _httpClient = httpClient;
             _fileUtils = fileUtils;
+
             progress = new NaiveProgress<ICopyProgress>(x => {
-                Console.WriteLine(x.PercentComplete);
                 CurrentStatus.Progress = x.PercentComplete;
             });
         }

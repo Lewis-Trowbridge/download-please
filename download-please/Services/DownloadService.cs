@@ -1,5 +1,5 @@
-using download_please.Downloaders;
 using download_please.Downloaders.Selectors;
+using Downloaders.Runners;
 using Grpc.Core;
 
 namespace download_please.Services
@@ -7,11 +7,11 @@ namespace download_please.Services
     public class DownloadService : Download.DownloadBase
     {
         private readonly IDownloaderSelector _downloaderSelector;
-        private readonly DownloadBackgroundRunnerFactory _downloadBackgroundRunnerFactory;
+        private readonly IDownloadBackgroundRunnerFactory _downloadBackgroundRunnerFactory;
 
         public DownloadService(
             IDownloaderSelector downloaderSelector,
-            DownloadBackgroundRunnerFactory downloadBackgroundRunnerFactory
+            IDownloadBackgroundRunnerFactory downloadBackgroundRunnerFactory
             )
         {
             _downloaderSelector = downloaderSelector;
@@ -33,8 +33,17 @@ namespace download_please.Services
 
         public async override Task<DownloadReply> Status(StatusRequest request, ServerCallContext context)
         {
-            var a = _downloadBackgroundRunnerFactory.Runners.GetValueOrDefault(Guid.Parse(request.Uuid));
-            return a.Downloader.CurrentStatus;
+            if (_downloadBackgroundRunnerFactory.Runners.TryGetValue(Guid.Parse(request.Uuid), out DownloadBackgroundRunner? downloadRunner))
+            {
+                return downloadRunner.Downloader.CurrentStatus;
+            }
+            else
+            {
+                return new DownloadReply()
+                {
+                    Status = "Not found"
+                };
+            }
         }
     }
 }
