@@ -1,19 +1,46 @@
-﻿namespace download_please.Downloaders
+﻿using download_please.Utils;
+using HttpProgress;
+using NaiveProgress;
+using System.Diagnostics;
+
+namespace download_please.Downloaders
 {
     public class HttpFileDownloader : IDownloader
     {
-        private HttpClient _httpClient;
-        public HttpFileDownloader(HttpClient httpClient)
+        private readonly HttpClient _httpClient;
+        private readonly IFileUtils _fileUtils;
+
+        public DownloadReply CurrentStatus { get; private set; } = new()
+        {
+            Status = "Not started",
+            Progress = 0,
+        };
+
+        private IProgress<ICopyProgress> progress;
+        public HttpFileDownloader(HttpClient httpClient,
+            IFileUtils fileUtils
+            )
         {
             _httpClient = httpClient;
+            _fileUtils = fileUtils;
+
+            progress = new NaiveProgress<ICopyProgress>(x => {
+                CurrentStatus.Progress = x.PercentComplete;
+            });
         }
-        public async Task<DownloadReply> Download(DownloadRequest request, Stream localFileStream) { 
-            var internetStream = await _httpClient.GetStreamAsync(request.Url);
-            internetStream.CopyToAsync(localFileStream);
-            return new DownloadReply
-            {
-                Status = "Downloading"
-            };
+
+
+        public Task<DownloadReply> Download(DownloadRequest request, string fileUri)
+        {
+            return Download(request, fileUri, CancellationToken.None);
+        }
+
+        public async Task<DownloadReply> Download(DownloadRequest request, string fileUri, CancellationToken token) {
+            CurrentStatus.Status = "Downloading";
+            var localFileStream = _fileUtils.CreateFile(fileUri);
+            await _httpClient.GetAsync(request.Url, localFileStream, progress, token);
+            CurrentStatus.Status = "Downloaded";
+            return CurrentStatus;
         }
     }
 }

@@ -1,18 +1,21 @@
 using download_please.Downloaders.Selectors;
+using Downloaders.Runners;
 using Grpc.Core;
-using System.IO.Abstractions;
 
 namespace download_please.Services
 {
     public class DownloadService : Download.DownloadBase
     {
-        public static readonly string DOWNLOAD_PLEASE_DIR = "DOWNLOAD_PLEASE_DIR";
         private readonly IDownloaderSelector _downloaderSelector;
-        private readonly IFileSystem _fileSystem;
-        public DownloadService(IDownloaderSelector downloaderSelector, IFileSystem fileSystem)
+        private readonly IDownloadBackgroundRunnerFactory _downloadBackgroundRunnerFactory;
+
+        public DownloadService(
+            IDownloaderSelector downloaderSelector,
+            IDownloadBackgroundRunnerFactory downloadBackgroundRunnerFactory
+            )
         {
             _downloaderSelector = downloaderSelector;
-            _fileSystem = fileSystem;
+            _downloadBackgroundRunnerFactory = downloadBackgroundRunnerFactory;
         }
 
         public async override Task<DownloadReply> Download(DownloadRequest request, ServerCallContext context)
@@ -20,10 +23,27 @@ namespace download_please.Services
             var downloader = _downloaderSelector.Select(request);
 
             var fileUrl = new Uri(request.Url, UriKind.Absolute);
-            var homeDirectory = Environment.GetEnvironmentVariable(DOWNLOAD_PLEASE_DIR) ?? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            using var localFileStream = _fileSystem.File.Create($"{homeDirectory}{Path.DirectorySeparatorChar}{fileUrl.Segments.Last()}");
 
-            return await downloader.Download(request, localFileStream);
+            var background = _downloadBackgroundRunnerFactory.CreateRunner(downloader, request, fileUrl.Segments.Last());
+
+            await background.StartAsync(context.CancellationToken);
+
+            return background.Downloader.CurrentStatus;
+        }
+
+        public async override Task<DownloadReply> Status(StatusRequest request, ServerCallContext context)
+        {
+            if (_downloadBackgroundRunnerFactory.Runners.TryGetValue(Guid.Parse(request.Uuid), out DownloadBackgroundRunner? downloadRunner))
+            {
+                return downloadRunner.Downloader.CurrentStatus;
+            }
+            else
+            {
+                return new DownloadReply()
+                {
+                    Status = "Not found"
+                };
+            }
         }
     }
 }
