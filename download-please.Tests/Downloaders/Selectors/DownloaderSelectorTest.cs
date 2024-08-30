@@ -1,6 +1,9 @@
 ﻿using download_please.Downloaders;
 using download_please.Downloaders.Selectors;
+using download_please.Utils;
 using Microsoft.Extensions.DependencyInjection;
+using System.IO.Abstractions;
+using System.IO.Abstractions.TestingHelpers;
 
 namespace download_please.Tests.Downloaders.Selectors
 {
@@ -16,6 +19,8 @@ namespace download_please.Tests.Downloaders.Selectors
             FakeServiceCollection = new ServiceCollection();
             FakeServiceCollection.AddHttpClient();
             FakeServiceCollection.AddSingleton<HttpFileDownloader>();
+            FakeServiceCollection.AddSingleton<IFileSystem, MockFileSystem>();
+            FakeServiceCollection.AddSingleton<IFileUtils,  FileUtils>();
             FakeServiceProvider = FakeServiceCollection.BuildServiceProvider();
             TestService = new DownloaderSelector(FakeServiceProvider);
         }
