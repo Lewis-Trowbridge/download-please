@@ -21,8 +21,10 @@ jobs:
       run: dotnet restore
     - name: Publish
       run: dotnet publish -r linux-x64 -c Release
-    - name: Upload build as artifact
-      uses: actions/upload-artifact@v4
+    - name: Build DEB file
+      uses: jiro4989/build-deb-action@v3.1.0
       with:
-        name: linux-x64
-        path: download-please/bin/Release/net8.0/linux-x64/publish
+        package: download-please
+        package-root: download-please/bin/Release/net8.0/linux-x64/publish
+        package-maintainer: Lewis
+        package-version: 0.0.1
