@@ -1,5 +1,7 @@
 using download_please.Downloaders.Selectors;
+using download_please.Utils;
 using Downloaders.Runners;
+using Google.Protobuf.Collections;
 using Grpc.Core;
 
 namespace download_please.Services
@@ -31,18 +33,22 @@ namespace download_please.Services
             return background.Downloader.CurrentStatus;
         }
 
-        public async override Task<DownloadReply> Status(StatusRequest request, ServerCallContext context)
+        public async override Task<StatusReply> Status(StatusRequest request, ServerCallContext context)
         {
-            if (_downloadBackgroundRunnerFactory.Runners.TryGetValue(Guid.Parse(request.Uuid), out DownloadBackgroundRunner? downloadRunner))
+            if (request.HasUuid)
             {
-                return downloadRunner.Downloader.CurrentStatus;
+                if (_downloadBackgroundRunnerFactory.Runners.TryGetValue(Guid.Parse(request.Uuid), out DownloadBackgroundRunner? downloadRunner))
+                {
+                    return new StatusReply().AddDownloadReplies([downloadRunner.Downloader.CurrentStatus]);
+                }
+                else
+                {
+                    return new StatusReply().AddDownloadReplies([]);
+                }
             }
             else
             {
-                return new DownloadReply()
-                {
-                    Status = "Not found"
-                };
+                return new StatusReply().AddDownloadReplies(_downloadBackgroundRunnerFactory.Runners.Select(runner => runner.Value.Downloader.CurrentStatus));
             }
         }
     }
