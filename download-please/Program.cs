@@ -4,6 +4,7 @@ using download_please.Services;
 using download_please.Utils;
 using Downloaders.Runners;
 using System.IO.Abstractions;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,14 @@ builder.Services.AddSingleton<IDownloaderSelector, DownloaderSelector>();
 builder.Services.AddSingleton<HttpFileDownloader>();
 builder.Services.AddSingleton<IDownloadBackgroundRunnerFactory, DownloadBackgroundRunnerFactory>();
 builder.Services.AddSingleton<IFileUtils, FileUtils>();
+
+if (builder.Environment.IsProduction())
+{
+    builder.WebHost.ConfigureKestrel(options =>
+    {
+        options.ListenAnyIP(5901);
+    });
+}
 
 var app = builder.Build();
 
