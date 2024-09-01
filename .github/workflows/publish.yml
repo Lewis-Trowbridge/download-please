@@ -28,3 +28,8 @@ jobs:
         package_root: download-please/bin/Release/net8.0/linux-x64/publish
         maintainer: Lewis
         version: 0.0.1
+    - name: Upload build as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: linux-x64
+        path: download-please_0.0.1_amd64.deb
