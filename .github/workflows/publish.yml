@@ -1,0 +1,34 @@
+name: .NET
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Publish
+      run: dotnet publish -r linux-x64 -c Release -p:InvariantGlobalization=true
+    - name: Build DEB file
+      uses: jiro4989/build-deb-action@v3.1.0
+      with:
+        package: download-please
+        package_root: download-please/bin/Release/net8.0/linux-x64/publish
+        maintainer: Lewis
+        version: 0.0.1
+    - name: Upload build as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: linux-x64
+        path: download-please_0.0.1_amd64.deb
