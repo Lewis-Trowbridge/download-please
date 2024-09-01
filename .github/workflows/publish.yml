@@ -25,6 +25,6 @@ jobs:
       uses: jiro4989/build-deb-action@v3.1.0
       with:
         package: download-please
-        package-root: download-please/bin/Release/net8.0/linux-x64/publish
-        package-maintainer: Lewis
-        package-version: 0.0.1
+        package_root: download-please/bin/Release/net8.0/linux-x64/publish
+        maintainer: Lewis
+        version: 0.0.1
