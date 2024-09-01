@@ -1,9 +1,10 @@
-name: .NET
+name: Publish .deb package
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   build:
