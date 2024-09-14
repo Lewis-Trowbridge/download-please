@@ -9,6 +9,7 @@ namespace download_please.Downloaders
     {
         private readonly HttpClient _httpClient;
         private readonly IFileUtils _fileUtils;
+        private readonly ILogger<HttpFileDownloader> _logger;
 
         public DownloadReply CurrentStatus { get; private set; } = new()
         {
@@ -17,12 +18,15 @@ namespace download_please.Downloaders
         };
 
         private IProgress<ICopyProgress> progress;
-        public HttpFileDownloader(HttpClient httpClient,
-            IFileUtils fileUtils
+        public HttpFileDownloader(
+            HttpClient httpClient,
+            IFileUtils fileUtils,
+            ILogger<HttpFileDownloader> logger
             )
         {
             _httpClient = httpClient;
             _fileUtils = fileUtils;
+            _logger = logger;
 
             progress = new NaiveProgress<ICopyProgress>(x => {
                 CurrentStatus.Progress = x.PercentComplete;
@@ -36,10 +40,20 @@ namespace download_please.Downloaders
         }
 
         public async Task<DownloadReply> Download(DownloadRequest request, string fileUri, CancellationToken token) {
+            _logger.LogInformation("Beginning download of {} to {}", request, fileUri);
             CurrentStatus.Status = "Downloading";
-            var localFileStream = _fileUtils.CreateFile(fileUri);
-            await _httpClient.GetAsync(request.Url, localFileStream, progress, token);
+            try
+            {
+
+                var localFileStream = _fileUtils.CreateFile(fileUri);
+                await _httpClient.GetAsync(request.Url, localFileStream, progress, token);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation("Exception thrown while downloading: {}", ex);
+            }
             CurrentStatus.Status = "Downloaded";
+            _logger.LogInformation("Download {} complete!", request);
             return CurrentStatus;
         }
     }
