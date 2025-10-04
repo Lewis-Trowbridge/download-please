@@ -66,7 +66,7 @@ namespace download_please.Tests.Downloaders
 
             var expected = new DownloadReply()
             {
-                Status = "Downloaded"
+                Status = DownloadStatus.FinishedDownloading,
             };
 
             var actual = await TestService.Download(fakeRequest, "");

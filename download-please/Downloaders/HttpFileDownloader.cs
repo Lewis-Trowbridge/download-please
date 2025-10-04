@@ -12,7 +12,7 @@ namespace download_please.Downloaders
 
         public DownloadReply CurrentStatus { get; private set; } = new()
         {
-            Status = "Not started",
+            Status = DownloadStatus.NotStarted,
             Progress = 0,
         };
 
@@ -36,10 +36,10 @@ namespace download_please.Downloaders
         }
 
         public async Task<DownloadReply> Download(DownloadRequest request, string fileUri, CancellationToken token) {
-            CurrentStatus.Status = "Downloading";
+            CurrentStatus.Status = DownloadStatus.Downloading;
             var localFileStream = _fileUtils.CreateFile(fileUri);
             await _httpClient.GetAsync(request.Url, localFileStream, progress, token);
-            CurrentStatus.Status = "Downloaded";
+            CurrentStatus.Status = DownloadStatus.FinishedDownloading;
             return CurrentStatus;
         }
     }
