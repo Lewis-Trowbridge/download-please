@@ -5,6 +5,8 @@ using download_please.Utils;
 using Downloaders.Runners;
 using System.IO.Abstractions;
 using System.Net;
+using System.Reflection.Metadata.Ecma335;
+using VideoLibrary;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +20,7 @@ builder.Services.AddSingleton<IDownloaderSelector, DownloaderSelector>();
 builder.Services.AddSingleton<HttpFileDownloader>();
 builder.Services.AddSingleton<IDownloadBackgroundRunnerFactory, DownloadBackgroundRunnerFactory>();
 builder.Services.AddSingleton<IFileUtils, FileUtils>();
+builder.Services.AddSingleton<YouTube, YouTube>();
 
 if (builder.Environment.IsProduction())
 {

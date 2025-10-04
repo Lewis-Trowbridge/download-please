@@ -16,6 +16,7 @@
     <PackageReference Include="bloomtom.NaiveProgress" Version="1.0.0" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.65.0" />
     <PackageReference Include="TestableIO.System.IO.Abstractions.Wrappers" Version="21.0.29" />
+    <PackageReference Include="VideoLibrary" Version="3.2.9" />
   </ItemGroup>
 
 </Project>
