@@ -5,8 +5,8 @@ using download_please.Utils;
 using Downloaders.Runners;
 using System.IO.Abstractions;
 using System.Net;
-using System.Reflection.Metadata.Ecma335;
-using VideoLibrary;
+using YoutubeExplode;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,10 +17,11 @@ builder.Services.AddSingleton<IFileSystem, FileSystem>();
 
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<IDownloaderSelector, DownloaderSelector>();
-builder.Services.AddSingleton<HttpFileDownloader>();
+builder.Services.AddSingleton<HttpFileDownloader>(); // These will need to change to non-singleton 
+builder.Services.AddSingleton<YoutubeDownloader>();
 builder.Services.AddSingleton<IDownloadBackgroundRunnerFactory, DownloadBackgroundRunnerFactory>();
 builder.Services.AddSingleton<IFileUtils, FileUtils>();
-builder.Services.AddSingleton<YouTube, YouTube>();
+builder.Services.AddSingleton<YoutubeClient, YoutubeClient>();
 
 if (builder.Environment.IsProduction())
 {
