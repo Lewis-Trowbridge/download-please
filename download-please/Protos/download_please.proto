@@ -10,13 +10,20 @@ service Download {
   rpc Status (StatusRequest) returns (StatusReply);
 }
 
+enum DownloadStatus {
+	NOT_STARTED = 0;
+	DOWNLOADING = 1;
+	FINISHED_DOWNLOADING = 2;
+	ERROR = 3;
+}
+
 message DownloadRequest {
   string url = 1;
 }
 
 message DownloadReply {
   string uuid = 1;
-  string status = 2;
+  DownloadStatus status = 2;
   double progress = 3;
 }
 

@@ -13,9 +13,7 @@ namespace download_please.Downloaders
         public float Progress { get; private set; } = 0f;
 
         private IProgress<ICopyProgress> progress;
-        public HttpFileDownloader(HttpClient httpClient,
-            IFileUtils fileUtils
-            )
+        public HttpFileDownloader(HttpClient httpClient, IFileUtils fileUtils)
         {
             _httpClient = httpClient;
             _fileUtils = fileUtils;
