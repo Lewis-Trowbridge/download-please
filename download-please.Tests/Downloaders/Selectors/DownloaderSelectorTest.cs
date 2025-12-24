@@ -19,6 +19,7 @@ namespace download_please.Tests.Downloaders.Selectors
             FakeServiceCollection = new ServiceCollection();
             FakeServiceCollection.AddHttpClient();
             FakeServiceCollection.AddSingleton<HttpFileDownloader>();
+            FakeServiceCollection.AddSingleton<YoutubeDownloader>();
             FakeServiceCollection.AddSingleton<IFileSystem, MockFileSystem>();
             FakeServiceCollection.AddSingleton<IFileUtils,  FileUtils>();
             FakeServiceProvider = FakeServiceCollection.BuildServiceProvider();
@@ -36,6 +37,19 @@ namespace download_please.Tests.Downloaders.Selectors
             var actual = TestService.Select(testRequest);
 
             actual.Should().BeOfType<HttpFileDownloader>();
+        }
+
+        [Fact]
+        public void DownloaderSelector_WhenGivenRequestWithYoutubeDomain_ReturnsYoutubeDownloaderFromServiceProvider()
+        {
+            var testRequest = new DownloadRequest()
+            {
+                Url = "https://www.youtube.com/watch?v=oA0CpI0vCK4"
+            };
+
+            var actual = TestService.Select(testRequest);
+
+            actual.Should().BeOfType<YoutubeDownloader>();
         }
     }
 }
