@@ -13,10 +13,18 @@ namespace Downloaders.Runners
         public DownloadReply CurrentStatus => new()
         {
             Progress = Downloader.Progress,
-            Status = "E",
+            Status = GetStatusFromProgress(Downloader.Progress),
             Uuid = Guid.ToString(),
         };
 
+        private DownloadStatus GetStatusFromProgress(float progress) =>
+            progress switch
+            {
+                var p when p == 0f => DownloadStatus.NotStarted,
+                var p when p > 100f => DownloadStatus.Downloading,
+                var p when p == 100f => DownloadStatus.FinishedDownloading,
+                _ => DownloadStatus.Error,
+            };
 
         public DownloadBackgroundRunner(IDownloader downloader, DownloadRequest request, string fileUri, Guid guid)
         {
