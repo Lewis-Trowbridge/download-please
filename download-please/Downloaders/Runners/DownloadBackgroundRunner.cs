@@ -9,13 +9,21 @@ namespace Downloaders.Runners
         public IDownloader Downloader { get; }
         public DownloadRequest Request { get; }
         public string FileUri { get; }
+        public Guid Guid { get; }
+        public DownloadReply CurrentStatus => new()
+        {
+            Progress = Downloader.Progress,
+            Status = "E",
+            Uuid = Guid.ToString(),
+        };
 
 
-        public DownloadBackgroundRunner(IDownloader downloader, DownloadRequest request, string fileUri)
+        public DownloadBackgroundRunner(IDownloader downloader, DownloadRequest request, string fileUri, Guid guid)
         {
             Downloader = downloader;
             Request = request;
             FileUri = fileUri;
+            Guid = guid;
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
