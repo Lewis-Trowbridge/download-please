@@ -4,6 +4,7 @@ using download_please.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
+using YoutubeExplode;
 
 namespace download_please.Tests.Downloaders.Selectors
 {
@@ -22,6 +23,7 @@ namespace download_please.Tests.Downloaders.Selectors
             FakeServiceCollection.AddSingleton<YoutubeDownloader>();
             FakeServiceCollection.AddSingleton<IFileSystem, MockFileSystem>();
             FakeServiceCollection.AddSingleton<IFileUtils,  FileUtils>();
+            FakeServiceCollection.AddSingleton<YoutubeClient, YoutubeClient>();
             FakeServiceProvider = FakeServiceCollection.BuildServiceProvider();
             TestService = new DownloaderSelector(FakeServiceProvider);
         }
