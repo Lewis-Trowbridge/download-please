@@ -6,6 +6,6 @@ namespace download_please.Downloaders
     {
         public Task Download(DownloadRequest request, string fileUri, CancellationToken token);
         public Task Download(DownloadRequest request, string fileUri);
-        public float Progress { get; }
+        public double Progress { get; }
     }
 }

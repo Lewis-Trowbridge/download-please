@@ -10,7 +10,7 @@ namespace download_please.Downloaders
         private readonly HttpClient _httpClient;
         private readonly IFileUtils _fileUtils;
 
-        public float Progress { get; private set; } = 0f;
+        public double Progress { get; private set; } = 0f;
 
         private IProgress<ICopyProgress> progress;
         public HttpFileDownloader(HttpClient httpClient, IFileUtils fileUtils)
@@ -19,7 +19,7 @@ namespace download_please.Downloaders
             _fileUtils = fileUtils;
 
             progress = new NaiveProgress<ICopyProgress>(x => {
-                Progress = Convert.ToSingle(x.PercentComplete);
+                Progress = x.PercentComplete;
             });
         }
 

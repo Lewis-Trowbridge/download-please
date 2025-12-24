@@ -54,25 +54,5 @@ namespace download_please.Tests.Downloaders
 
             actual.Should().BeEquivalentTo(fakeContent);
         }
-
-        [Fact]
-        public async Task HttpFileDownloader_WhenGivenRequest_ReturnsDownloadReply()
-        {
-            var fakeUrl = "http://fake.url";
-            var fakeRequest = new DownloadRequest()
-            {
-                Url = fakeUrl
-            };
-
-            var expected = new DownloadReply()
-            {
-                Status = DownloadStatus.FinishedDownloading,
-            };
-
-            var actual = await TestService.Download(fakeRequest, "");
-
-            actual.Should().BeEquivalentTo(expected);
-
-        }
     }
 }

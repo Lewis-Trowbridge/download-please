@@ -32,7 +32,7 @@ namespace download_please.Tests
             {
                 Url = $"http://fake-url.com/{fakeFileName}"
             };
-            var mockBackgroundService = new Mock<DownloadBackgroundRunner>(mockDownloader.Object, fakeRequest, fakeFileName);
+            var mockBackgroundService = new Mock<DownloadBackgroundRunner>(mockDownloader.Object, fakeRequest, fakeFileName, Guid.NewGuid());
             MockDownloaderBackgroundRunnerFactory.Setup(x => x.CreateRunner(mockDownloader.Object, It.IsAny<DownloadRequest>(), It.IsAny<string>()))
                 .Returns(mockBackgroundService.Object);
 
@@ -54,7 +54,7 @@ namespace download_please.Tests
             {
                 Url = $"http://fake-url.com/{fakeFileName}"
             };
-            var mockBackgroundService = new Mock<DownloadBackgroundRunner>(mockDownloader.Object, fakeRequest, fakeFileName);
+            var mockBackgroundService = new Mock<DownloadBackgroundRunner>(mockDownloader.Object, fakeRequest, fakeFileName, Guid.NewGuid());
             MockDownloaderBackgroundRunnerFactory.Setup(x => x.CreateRunner(mockDownloader.Object, It.IsAny<DownloadRequest>(), It.IsAny<string>()))
                 .Returns(mockBackgroundService.Object);
 
