@@ -8,7 +8,7 @@ namespace download_please.Downloaders
     public class YoutubeDownloader : IDownloader
 
     {
-        public double Progress => fileStreamMonitor is not null ? (fileStreamMonitor.Position / fileStreamMonitor.Length) * 100 : 0d;
+        public double Progress => fileStreamMonitor != null ? (Convert.ToDouble(fileStreamMonitor.Position) / Convert.ToDouble(fileStreamMonitor.Length)) * 100 : 0d;
 
         private readonly YoutubeClient youtube;
         private readonly IFileUtils fileUtils;
