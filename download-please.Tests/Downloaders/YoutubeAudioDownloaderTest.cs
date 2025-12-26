@@ -47,9 +47,8 @@ namespace download_please.Tests.Downloaders
         public async Task YoutubeAudioDownloader_WhenGivenRequest_SavesToFileWithVideoName()
         {
             var fakeUrl = "fakeUrl";
-            var mockClient = new Mock<YoutubeClient>();
             
-            var testDownloader = new YoutubeAudioDownloader(mockClient.Object, MockFileUtils.Object, MockYoutubeDownloadUtils.Object);
+            var testDownloader = new YoutubeAudioDownloader(MockFileUtils.Object, MockYoutubeDownloadUtils.Object);
             await testDownloader.Download(new DownloadRequest() { Url = fakeUrl }, "");
 
             MockFileUtils.Verify(x => x.CreateFile(FakeTitle + ".mp4"));
@@ -57,6 +56,33 @@ namespace download_please.Tests.Downloaders
             var actualContent = FakeFileStream.ToArray();
             actualContent.Should().Equal(FakeStreamContent);
 
+        }
+
+        [Fact]
+        public void YoutubeAudioDownloader_WhenDownloadNotStarted_ReportsProgressAsPercentage()
+        {
+            var testDownloader = new YoutubeAudioDownloader(MockFileUtils.Object, MockYoutubeDownloadUtils.Object);
+            testDownloader.Progress.Should().Be(0d);
+        }
+        
+        [Fact]
+        public async Task YoutubeAudioDownloader_WhenDownloadFinished_ReportsProgressAsPercentage()
+        {
+            var testDownloader = new YoutubeAudioDownloader(MockFileUtils.Object, MockYoutubeDownloadUtils.Object);
+            await testDownloader.Download(new DownloadRequest() { Url = "" }, "");
+            testDownloader.Progress.Should().Be(1d);
+        }
+
+        [Fact]
+        public async Task YoutubeAudioDownloader_WhenDownloadPartiallyComplete_ReportsProgressAsPercentage()
+        {
+            // 1 / 5 = 0.2
+            var expectedPercentage = 0.2d;
+
+            var testDownloader = new YoutubeAudioDownloader(MockFileUtils.Object, MockYoutubeDownloadUtils.Object);
+            await testDownloader.Download(new DownloadRequest() { Url = "" }, "");
+            FakeVideoStream.Position = 1;
+            testDownloader.Progress.Should().Be(expectedPercentage);
         }
     }
 }

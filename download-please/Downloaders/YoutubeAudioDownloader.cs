@@ -8,16 +8,14 @@ namespace download_please.Downloaders
     public class YoutubeAudioDownloader : IDownloader
 
     {
-        public double Progress => fileStreamMonitor != null ? (Convert.ToDouble(fileStreamMonitor.Position) / Convert.ToDouble(fileStreamMonitor.Length)) * 100 : 0d;
+        public double Progress => fileStreamMonitor != null ? Convert.ToDouble(fileStreamMonitor.Position) / Convert.ToDouble(fileStreamMonitor.Length) : 0d;
 
-        private readonly YoutubeClient youtube;
         private readonly IFileUtils fileUtils;
         private Stream? fileStreamMonitor;
         private IYoutubeDownloadUtils downloadUtils;
 
-        public YoutubeAudioDownloader(YoutubeClient youtube, IFileUtils fileUtils, IYoutubeDownloadUtils downloadUtils)
+        public YoutubeAudioDownloader(IFileUtils fileUtils, IYoutubeDownloadUtils downloadUtils)
         {
-            this.youtube = youtube;
             this.fileUtils = fileUtils;
             this.downloadUtils = downloadUtils;
 
