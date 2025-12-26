@@ -14,7 +14,7 @@ namespace download_please.Downloaders.Selectors
         public IDownloader Select(DownloadRequest request) =>
             request.Url switch
             {
-                var uri when Regex.IsMatch(uri, "youtube\\.com") => _serviceProvider.GetRequiredService<YoutubeDownloader>(),
+                var uri when Regex.IsMatch(uri, "youtube\\.com") => _serviceProvider.GetRequiredService<YoutubeAudioDownloader>(),
                 _ => _serviceProvider.GetRequiredService<HttpFileDownloader>(),
 
             };

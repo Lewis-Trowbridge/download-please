@@ -5,7 +5,7 @@ using YoutubeExplode.Videos.Streams;
 
 namespace download_please.Downloaders
 {
-    public class YoutubeDownloader : IDownloader
+    public class YoutubeAudioDownloader : IDownloader
 
     {
         public double Progress => fileStreamMonitor != null ? (Convert.ToDouble(fileStreamMonitor.Position) / Convert.ToDouble(fileStreamMonitor.Length)) * 100 : 0d;
@@ -13,21 +13,25 @@ namespace download_please.Downloaders
         private readonly YoutubeClient youtube;
         private readonly IFileUtils fileUtils;
         private Stream? fileStreamMonitor;
+        private IYoutubeDownloadUtils downloadUtils;
 
-        public YoutubeDownloader(YoutubeClient youtube, IFileUtils fileUtils)
+        public YoutubeAudioDownloader(YoutubeClient youtube, IFileUtils fileUtils, IYoutubeDownloadUtils downloadUtils)
         {
             this.youtube = youtube;
             this.fileUtils = fileUtils;
+            this.downloadUtils = downloadUtils;
 
         }
 
         public async Task Download(DownloadRequest request, string fileUri, CancellationToken token)
         {
-            var videoInfo = await youtube.Videos.GetAsync(request.Url, token);
-            var manifestInfo = await youtube.Videos.Streams.GetManifestAsync(request.Url, token);
-            var streamInfo = manifestInfo.GetAudioOnlyStreams().GetWithHighestBitrate();
-            var videoStream = await youtube.Videos.Streams.GetAsync(streamInfo, token);
-            var fileStream = fileUtils.CreateFile(videoInfo.Title + "." + streamInfo.Container.Name);
+            
+
+            var videoInfo = downloadUtils.GetVideoInfo(request.Url, token);
+            var streamInfo = downloadUtils.GetAudioStreamInfo(request.Url, token);
+            
+            var fileStream = fileUtils.CreateFile((await videoInfo).Title + "." + (await streamInfo).Container.Name);
+            var videoStream = await downloadUtils.GetAudioStream(await streamInfo, token);
             fileStreamMonitor = videoStream;
             await videoStream.CopyToAsync(fileStream, token);
         }

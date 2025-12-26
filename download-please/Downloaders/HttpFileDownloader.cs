@@ -10,7 +10,7 @@ namespace download_please.Downloaders
         private readonly HttpClient _httpClient;
         private readonly IFileUtils _fileUtils;
 
-        public double Progress { get; private set; } = 0f;
+        public double Progress { get; private set; } = 0d;
 
         private IProgress<ICopyProgress> progress;
         public HttpFileDownloader(HttpClient httpClient, IFileUtils fileUtils)

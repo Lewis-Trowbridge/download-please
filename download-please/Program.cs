@@ -18,9 +18,10 @@ builder.Services.AddSingleton<IFileSystem, FileSystem>();
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<IDownloaderSelector, DownloaderSelector>();
 builder.Services.AddSingleton<HttpFileDownloader>(); // These will need to change to non-singleton 
-builder.Services.AddSingleton<YoutubeDownloader>();
+builder.Services.AddSingleton<YoutubeAudioDownloader>();
 builder.Services.AddSingleton<IDownloadBackgroundRunnerFactory, DownloadBackgroundRunnerFactory>();
 builder.Services.AddSingleton<IFileUtils, FileUtils>();
+builder.Services.AddSingleton<IYoutubeDownloadUtils, YoutubeDownloadUtils>();
 builder.Services.AddSingleton<YoutubeClient, YoutubeClient>();
 
 if (builder.Environment.IsProduction())
