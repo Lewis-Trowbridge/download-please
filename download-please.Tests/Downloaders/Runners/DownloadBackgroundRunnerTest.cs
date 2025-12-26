@@ -26,7 +26,7 @@ namespace download_please.Tests.Downloaders.Runners
         }
 
         [Fact]
-        public async void DownloadBackgroundRunner_GetsCurrentStatus_BasedOnDownloaderState()
+        public async Task DownloadBackgroundRunner_GetsCurrentStatus_BasedOnDownloaderState()
         {
             var expectedCurrentStatus = new DownloadReply()
             {
