@@ -17,7 +17,6 @@
     <PackageReference Include="Grpc.AspNetCore" Version="2.65.0" />
     <PackageReference Include="TestableIO.System.IO.Abstractions.Wrappers" Version="21.0.29" />
     <PackageReference Include="YoutubeExplode" Version="6.5.6" />
-    <PackageReference Include="YoutubeExplode.Converter" Version="6.5.6" />
   </ItemGroup>
 
 </Project>
