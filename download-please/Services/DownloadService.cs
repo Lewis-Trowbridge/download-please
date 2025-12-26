@@ -1,7 +1,6 @@
 using download_please.Downloaders.Selectors;
 using download_please.Utils;
 using Downloaders.Runners;
-using Google.Protobuf.Collections;
 using Grpc.Core;
 
 namespace download_please.Services
@@ -30,7 +29,7 @@ namespace download_please.Services
 
             await background.StartAsync(context.CancellationToken);
 
-            return background.Downloader.CurrentStatus;
+            return background.CurrentStatus;
         }
 
         public async override Task<StatusReply> Status(StatusRequest request, ServerCallContext context)
@@ -39,7 +38,7 @@ namespace download_please.Services
             {
                 if (_downloadBackgroundRunnerFactory.Runners.TryGetValue(Guid.Parse(request.Uuid), out DownloadBackgroundRunner? downloadRunner))
                 {
-                    return new StatusReply().AddDownloadReplies([downloadRunner.Downloader.CurrentStatus]);
+                    return new StatusReply().AddDownloadReplies([downloadRunner.CurrentStatus]);
                 }
                 else
                 {
@@ -48,7 +47,7 @@ namespace download_please.Services
             }
             else
             {
-                return new StatusReply().AddDownloadReplies(_downloadBackgroundRunnerFactory.Runners.Select(runner => runner.Value.Downloader.CurrentStatus));
+                return new StatusReply().AddDownloadReplies(_downloadBackgroundRunnerFactory.Runners.Select(runner => runner.Value.CurrentStatus));
             }
         }
     }

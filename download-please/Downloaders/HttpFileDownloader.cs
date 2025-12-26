@@ -10,37 +10,28 @@ namespace download_please.Downloaders
         private readonly HttpClient _httpClient;
         private readonly IFileUtils _fileUtils;
 
-        public DownloadReply CurrentStatus { get; private set; } = new()
-        {
-            Status = DownloadStatus.NotStarted,
-            Progress = 0,
-        };
+        public double Progress { get; private set; } = 0d;
 
         private IProgress<ICopyProgress> progress;
-        public HttpFileDownloader(HttpClient httpClient,
-            IFileUtils fileUtils
-            )
+        public HttpFileDownloader(HttpClient httpClient, IFileUtils fileUtils)
         {
             _httpClient = httpClient;
             _fileUtils = fileUtils;
 
             progress = new NaiveProgress<ICopyProgress>(x => {
-                CurrentStatus.Progress = x.PercentComplete;
+                Progress = x.PercentComplete;
             });
         }
 
 
-        public Task<DownloadReply> Download(DownloadRequest request, string fileUri)
+        public Task Download(DownloadRequest request, string fileUri)
         {
             return Download(request, fileUri, CancellationToken.None);
         }
 
-        public async Task<DownloadReply> Download(DownloadRequest request, string fileUri, CancellationToken token) {
-            CurrentStatus.Status = DownloadStatus.Downloading;
+        public async Task Download(DownloadRequest request, string fileUri, CancellationToken token) {
             var localFileStream = _fileUtils.CreateFile(fileUri);
             await _httpClient.GetAsync(request.Url, localFileStream, progress, token);
-            CurrentStatus.Status = DownloadStatus.FinishedDownloading;
-            return CurrentStatus;
         }
     }
 }

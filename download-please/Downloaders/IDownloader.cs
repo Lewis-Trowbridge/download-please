@@ -4,8 +4,8 @@ namespace download_please.Downloaders
 {
     public interface IDownloader
     {
-        public Task<DownloadReply> Download(DownloadRequest request, string fileUri, CancellationToken token);
-        public Task<DownloadReply> Download(DownloadRequest request, string fileUri);
-        public DownloadReply CurrentStatus { get; }
+        public Task Download(DownloadRequest request, string fileUri, CancellationToken token);
+        public Task Download(DownloadRequest request, string fileUri);
+        public double Progress { get; }
     }
 }

@@ -56,23 +56,24 @@ namespace download_please.Tests.Downloaders
         }
 
         [Fact]
-        public async Task HttpFileDownloader_WhenGivenRequest_ReturnsDownloadReply()
+        public void HttpFileDownloader_WhenDownloadNotStarted_ReturnsProgressAsPercentage()
+        {
+            TestService.Progress.Should().Be(0d);
+        }
+
+        [Fact]
+        public async Task HttpFileDownloader_WhenDownloadFinished_ReturnsProgressAsPercentage()
         {
             var fakeUrl = "http://fake.url";
+            var fakeContent = "fake content";
+            MockHandler.SetupAnyRequest().ReturnsResponse(System.Net.HttpStatusCode.OK, fakeContent);
             var fakeRequest = new DownloadRequest()
             {
                 Url = fakeUrl
             };
 
-            var expected = new DownloadReply()
-            {
-                Status = DownloadStatus.FinishedDownloading,
-            };
-
-            var actual = await TestService.Download(fakeRequest, "");
-
-            actual.Should().BeEquivalentTo(expected);
-
+            await TestService.Download(fakeRequest, "");
+            TestService.Progress.Should().Be(1d);
         }
     }
 }

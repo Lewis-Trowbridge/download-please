@@ -1,4 +1,6 @@
-﻿namespace download_please.Downloaders.Selectors
+﻿using System.Text.RegularExpressions;
+
+namespace download_please.Downloaders.Selectors
 {
     public class DownloaderSelector : IDownloaderSelector
     {
@@ -12,7 +14,9 @@
         public IDownloader Select(DownloadRequest request) =>
             request.Url switch
             {
+                var uri when Regex.IsMatch(uri, "youtube\\.com") => _serviceProvider.GetRequiredService<YoutubeAudioDownloader>(),
                 _ => _serviceProvider.GetRequiredService<HttpFileDownloader>(),
+
             };
     }
 }
